@@ -1,4 +1,3 @@
-import edu.princeton.cs.algs4.In;
 
 import java.util.Random;
 import java.awt.Color;
@@ -132,6 +131,8 @@ public class Maze implements Observer {
     public Maze(String configFilename) {
 
     }
+
+    /*
 
     /**
      * Creates a Maze with given N, random seed, parameter p (not used by
@@ -417,4 +418,6 @@ public class Maze implements Observer {
     private boolean[][] west;
     private static Random rgen;
     private static int DRAW_DELAY_MS = 50;
+
+
 }
