@@ -69,7 +69,7 @@ class Maze:
         returns true if the location(x, y) is in bounds
         """
         x, y = location
-        return 0 <= x <= (self.width - 1) and 0 <= y <= (self.length - 1)
+        return 0 <= x <= (self.length - 1) and 0 <= y <= (self.width - 1)
         # return not((x == -1) or (x == self.width) or (y == -1) or (y == self.length))
 
     def isPath(self, location):
@@ -83,7 +83,6 @@ class Maze:
         """
         Returns successor states, the actions they require, and a cost of 1.
          As noted in search.py:
-
              For a given state, this should return a list of triples,
          (successor, action, stepCost), where 'successor' is a
          successor to the current state, 'action' is the action
@@ -115,7 +114,6 @@ class Maze:
 
         return successors
 
-
 def depthFirstSearch(maze: Maze):
     """
     Search the deepest nodes in the search tree first.
@@ -142,7 +140,8 @@ def depthFirstSearch(maze: Maze):
 
         if current not in reached:
             reached.add(current)
-            for nextTuple in maze.getSuccessors(current):
+            successors = maze.getSuccessors(current)
+            for nextTuple in successors:
                 frontier.push((nextTuple[0], path + [nextTuple[1]]))
     return []
 
@@ -154,7 +153,13 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
-def aStarSearch(maze, heuristic=nullHeuristic):
+def manhattanHeuristic(position, maze):
+    "The Manhattan distance heuristic for a PositionSearchProblem"
+    xy1 = position
+    xy2 = maze.getGoalState()
+    return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+
+def aStarSearch(maze, heuristic=manhattanHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
     frontier = util.PriorityQueue()
@@ -183,7 +188,7 @@ def aStarSearch(maze, heuristic=nullHeuristic):
     return []
 
 if __name__ == '__main__':
-    maze = Maze('simpleMaze.txt')
+    maze = Maze('../mazeFiles/maze-Easy.txt')
     dfsPath = depthFirstSearch(maze)
     print(dfsPath)
     astarPath = aStarSearch(maze)
