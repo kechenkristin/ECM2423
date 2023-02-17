@@ -1,5 +1,6 @@
 import string
 import util
+import time
 
 
 class Maze:
@@ -114,6 +115,7 @@ class Maze:
 
         return successors
 
+
 def depthFirstSearch(maze: Maze):
     """
     Search the deepest nodes in the search tree first.
@@ -125,7 +127,6 @@ def depthFirstSearch(maze: Maze):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
     frontier = util.Stack()
     reached = set()
 
@@ -146,6 +147,46 @@ def depthFirstSearch(maze: Maze):
     return []
 
 
+def depthFirstSearch2(maze: Maze):
+    """
+    Updated version of dfs, 
+    Can calculate some statistics about its performance.
+    The number of nodes explored to find the path,
+    the time of the execution,
+    and the number of steps in the resulting path.
+    return a list contains two items: a dictionary stores all the info above
+    a path list
+    """
+    start_time = time.time()
+    frontier = util.Stack()
+    reached = set()
+
+    startState = maze.getStartState()
+    frontier.push((startState, [startState]))
+    exploredNodeCount = 0
+    ret = []
+
+    while not frontier.isEmpty():
+        current, path = frontier.pop()
+
+        if maze.isGoalState(current):
+            end_time = time.time()
+            # print(reached)
+            # print(exploredNodeCount)
+            ret.append(
+                {'exporedNode': exploredNodeCount, 'executionTime': end_time - start_time, 'numOfSteps': len(reached)})
+            ret.append(path)
+            return ret
+
+        if current not in reached:
+            reached.add(current)
+            successors = maze.getSuccessors(current)
+            for nextTuple in successors:
+                frontier.push((nextTuple[0], path + [nextTuple[1]]))
+                exploredNodeCount += 1
+    return []
+
+
 def nullHeuristic(state, problem=None):
     """
     A heuristic function estimates the cost from the current state to the nearest
@@ -153,15 +194,52 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+
 def manhattanHeuristic(position, maze):
     "The Manhattan distance heuristic for a PositionSearchProblem"
     xy1 = position
     xy2 = maze.getGoalState()
     return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 
+
+def aStarSearchUpdated(maze, heuristic=manhattanHeuristic):
+    """Search the node that has the lowest combined cost and heuristic first."""
+    start_time = time.time()
+    frontier = util.PriorityQueue()
+    reached = set()
+
+    startState = maze.getStartState()
+    frontier.push((startState, [startState], 0), 0)
+    exploredNodeCount = 0
+    ret = []
+
+    while not frontier.isEmpty():
+        current, path, costSoFar = frontier.pop()
+
+        if maze.isGoalState(current):
+            end_time = time.time()
+            ret.append(
+                {'exporedNode': exploredNodeCount, 'executionTime': end_time - start_time, 'numOfSteps': len(reached)})
+            ret.append(path)
+            return ret
+
+        if current not in reached:
+            reached.add(current)
+            for nextTuple in maze.getSuccessors(current):
+                # frontier.push((nextNode, newPath, newCost), priority)
+                # newCost = costSoFar + stepCost
+                # F(x) = g(x) + h(x)
+                # g(x) : backword cost = newCost = costSoFar + stepCost
+                # priority = newCost + h(x)
+                newCost = costSoFar + nextTuple[2]
+                frontier.push((nextTuple[0], path + [nextTuple[1]], newCost), newCost + heuristic(nextTuple[0], maze))
+                exploredNodeCount += 1
+
+    return []
+
+
 def aStarSearch(maze, heuristic=manhattanHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
     frontier = util.PriorityQueue()
     reached = set()
 
@@ -187,9 +265,10 @@ def aStarSearch(maze, heuristic=manhattanHeuristic):
 
     return []
 
+
 if __name__ == '__main__':
     maze = Maze('../mazeFiles/maze-Easy.txt')
-    dfsPath = depthFirstSearch(maze)
-    print(dfsPath)
-    astarPath = aStarSearch(maze)
+    # dfsPath = depthFirstSearch2(maze)
+    # print(dfsPath)
+    astarPath = aStarSearchUpdated(maze)
     print(astarPath)
