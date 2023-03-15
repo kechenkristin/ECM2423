@@ -6,6 +6,7 @@ import time
 class Maze:
     def __init__(self, sourceFile, costFn=lambda x: 1):
         """
+
         A maze is made of a two-dimensional array
 
         sourceFile: the file required to generate the maze
@@ -26,6 +27,7 @@ class Maze:
         # construct grid, false - wall, true - path
         # [[False, True, False, False, False], [False, True, True, False, False], [False, False, True, False, False], [False, False, True, False, False]]
         self.grid = [[c == '-' for c in line] for line in self.lines]
+
 
     def generateFileLines(self):
         """
